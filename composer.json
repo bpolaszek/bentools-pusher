@@ -1,0 +1,16 @@
+{
+    "name": "bentools/pusher",
+    "description": "PHP Asynchronous Push Notification management",
+    "type": "library",
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle": "~6.0",
+        "minishlink/web-push": "v1.1"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "BenTools\\Pusher\\": "src/BenTools/Pusher"
+        }
+    }
+}
