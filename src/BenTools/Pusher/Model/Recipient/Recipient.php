@@ -115,7 +115,7 @@ class Recipient implements RecipientInterface {
      *
      * @return RecipientInterface
      */
-    public static function unwrapJSON($json): RecipientInterface {
+    public static function unwrapJSON($json): self {
         if (is_string($json)) {
             $json = json_decode($json, true);
         }

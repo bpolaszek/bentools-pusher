@@ -3,7 +3,6 @@
 namespace BenTools\Pusher\Model\Push;
 
 use BenTools\Pusher\Model\Message\MessageInterface;
-use BenTools\Pusher\Model\Recipient\RecipientCollectionInterface;
 use BenTools\Pusher\Model\Recipient\RecipientInterface;
 
 interface PushInterface {
@@ -68,20 +67,13 @@ interface PushInterface {
 	public function setMessage(MessageInterface $message): PushInterface;
 
 	/**
-	 * @return RecipientCollectionInterface
+	 * @return RecipientInterface[]
 	 */
-	public function getRecipients(): RecipientCollectionInterface;
+	public function getRecipients(): iterable;
 
 	/**
-	 * @param RecipientCollectionInterface $recipients
-	 *
-	 * @return $this
+	 * @return iterable|RecipientInterface[]
 	 */
-	public function setRecipients(RecipientCollectionInterface $recipients): PushInterface;
-
-	/**
-	 * @return RecipientCollectionInterface|RecipientInterface[]
-	 */
-	public function getFailedRecipients(): RecipientCollectionInterface;
+	public function getFailedRecipients(): iterable;
 
 }

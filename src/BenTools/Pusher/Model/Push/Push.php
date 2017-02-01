@@ -3,36 +3,49 @@
 namespace BenTools\Pusher\Model\Push;
 
 use BenTools\Pusher\Model\Message\MessageInterface;
-use BenTools\Pusher\Model\Recipient\RecipientArrayCollection;
-use BenTools\Pusher\Model\Recipient\RecipientCollectionInterface;
 use BenTools\Pusher\Model\Recipient\RecipientInterface;
 
-class Push implements PushInterface, RecipientCollectionInterface {
+class Push implements PushInterface {
 
+    /**
+     * @var MessageInterface
+     */
     protected $message;
-    protected $recipients;
-    protected $status   = self::STATUS_PENDING;
-    protected $failures = [];
+
+    /**
+     * @var RecipientInterface[]
+     */
+    protected $recipients = [];
+
+    /**
+     * @var string
+     */
+    protected $status     = self::STATUS_PENDING;
+
+    /**
+     * @var array
+     */
+    protected $failures   = [];
 
     /**
      * Push constructor.
-     * @param RecipientCollectionInterface|null $recipientCollection
+     * @param $recipients
      */
-    public function __construct(RecipientCollectionInterface $recipientCollection = null) {
-        $this->recipients = $recipientCollection ?: new RecipientArrayCollection();
+    public function __construct($recipients = []) {
+        $this->setRecipients($recipients);
     }
 
     /**
      * @inheritDoc
      */
-    public function getMessage() : MessageInterface {
+    public function getMessage(): MessageInterface {
         return $this->message;
     }
 
     /**
      * @inheritDoc
      */
-    public function setMessage(MessageInterface $message) : PushInterface {
+    public function setMessage(MessageInterface $message): PushInterface {
         $this->message = $message;
         return $this;
     }
@@ -40,36 +53,71 @@ class Push implements PushInterface, RecipientCollectionInterface {
     /**
      * @inheritDoc
      */
-    public function getRecipients() : RecipientCollectionInterface {
+    public function getRecipients(): iterable {
         return $this->recipients;
     }
 
     /**
-     * @inheritDoc
+     * @param iterable $recipients
+     * @return PushInterface
      */
-    public function setRecipients(RecipientCollectionInterface $recipients) : PushInterface {
-        $this->recipients = $recipients;
+    public function setRecipients(iterable $recipients): self {
+        $this->recipients = [];
+        foreach ($recipients AS $recipient) {
+            $this->addRecipient($recipient);
+        }
+        return $this;
+    }
+
+    /**
+     * @param RecipientInterface $recipient
+     * @return bool
+     */
+    public function hasRecipient(RecipientInterface $recipient): bool {
+        return in_array($recipient, $this->recipients);
+    }
+
+    /**
+     * @param RecipientInterface $recipient
+     * @return $this
+     */
+    public function addRecipient(RecipientInterface $recipient): self {
+        if ($this->hasRecipient($recipient)) {
+            throw new \InvalidArgumentException("This recipient is already part of that push - check with Push::hasRecipient() first");
+        }
+        $this->recipients[] = $recipient;
+        return $this;
+    }
+
+    /**
+     * @param RecipientInterface $recipient
+     * @return $this
+     */
+    public function removeRecipient(RecipientInterface $recipient): self {
+        if (false !== ($i = array_search($recipient, $this->recipients))) {
+            unset($this->recipients[$i]);
+        }
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function isPending() : bool {
+    public function isPending(): bool {
         return static::STATUS_PENDING === $this->status;
     }
 
     /**
      * @inheritDoc
      */
-    public function isDone() : bool {
+    public function isDone(): bool {
         return static::STATUS_DONE === $this->status;
     }
 
     /**
      * @inheritDoc
      */
-    public function setStatus($status) : PushInterface {
+    public function setStatus($status): PushInterface {
         $this->status = $status;
         return $this;
     }
@@ -77,14 +125,14 @@ class Push implements PushInterface, RecipientCollectionInterface {
     /**
      * @inheritDoc
      */
-    public function hasErrors() : bool {
+    public function hasErrors(): bool {
         return count($this->failures) > 0;
     }
 
     /**
      * @inheritDoc
      */
-    public function setFailedFor(RecipientInterface $recipient, string $reason) : PushInterface {
+    public function setFailedFor(RecipientInterface $recipient, string $reason): PushInterface {
         $this->failures[$recipient->getIdentifier()] = [
             'recipient' => $recipient,
             'reason'    => $reason,
@@ -95,59 +143,32 @@ class Push implements PushInterface, RecipientCollectionInterface {
     /**
      * @inheritDoc
      */
-    public function hasFailed(RecipientInterface $recipient) : bool {
+    public function hasFailed(RecipientInterface $recipient): bool {
         return array_key_exists($recipient->getIdentifier(), $this->failures);
     }
 
     /**
      * @inheritDoc
      */
-    public function getFailureReason(RecipientInterface $recipient) : string {
+    public function getFailureReason(RecipientInterface $recipient): string {
         return isset($this->failures[$recipient->getIdentifier()]) ? $this->failures[$recipient->getIdentifier()]['reason'] : null;
     }
 
     /**
      * @inheritdoc
      */
-    public function getFailedRecipients() : RecipientCollectionInterface {
-        $recipients = array_map(function ($failure) {
+    public function getFailedRecipients(): iterable {
+        $recipients = new \ArrayIterator(array_map(function ($failure) {
             return $failure['recipient'];
-        }, $this->failures);
-        $collection = new RecipientArrayCollection();
-        foreach ($recipients AS $recipient) {
-            $collection->addRecipient($recipient);
-        }
-        return $collection;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function addRecipient(RecipientInterface $recipient) : RecipientCollectionInterface {
-        $this->getRecipients()->addRecipient($recipient);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function removeRecipient(RecipientInterface $recipient) : RecipientCollectionInterface {
-        $this->getRecipients()->removeRecipient($recipient);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function hasRecipient(RecipientInterface $recipient) : bool {
-        return $this->getRecipients()->hasRecipient($recipient);
+        }, $this->failures));
+        return $recipients;
     }
 
     /**
      * @inheritDoc
      */
     public function getIterator() {
-        return $this->getRecipients()->getIterator();
+        return is_array($this->recipients) ? new \ArrayIterator($this->recipients) : $this->getRecipients();
     }
 
 }
