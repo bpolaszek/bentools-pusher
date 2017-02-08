@@ -14,11 +14,6 @@ class Recipient implements RecipientInterface {
     protected $options = [];
 
     /**
-     * @var PushHandlerInterface
-     */
-    protected $pushHandler;
-
-    /**
      * @inheritDoc
      */
     public function getIdentifier() : string {
@@ -30,21 +25,6 @@ class Recipient implements RecipientInterface {
      */
     public function setIdentifier(string $identifier) : RecipientInterface {
         $this->identifier = $identifier;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPushHandler() : PushHandlerInterface {
-        return $this->pushHandler;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setPushHandler(PushHandlerInterface $handler) : RecipientInterface {
-        $this->pushHandler = $handler;
         return $this;
     }
 

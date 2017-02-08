@@ -2,6 +2,7 @@
 
 namespace BenTools\Pusher\Model\Push;
 
+use BenTools\Pusher\Model\Handler\PushHandlerInterface;
 use BenTools\Pusher\Model\Message\MessageInterface;
 use BenTools\Pusher\Model\Recipient\RecipientInterface;
 
@@ -18,22 +19,19 @@ class Push implements PushInterface {
     protected $recipients = [];
 
     /**
+     * @var PushHandlerInterface[]
+     */
+    protected $handlers = [];
+
+    /**
      * @var string
      */
-    protected $status     = self::STATUS_PENDING;
+    protected $status = self::STATUS_PENDING;
 
     /**
      * @var array
      */
-    protected $failures   = [];
-
-    /**
-     * Push constructor.
-     * @param $recipients
-     */
-    public function __construct($recipients = []) {
-        $this->setRecipients($recipients);
-    }
+    protected $failures = [];
 
     /**
      * @inheritDoc
@@ -54,19 +52,34 @@ class Push implements PushInterface {
      * @inheritDoc
      */
     public function getRecipients(): iterable {
-        return $this->recipients;
+        $output = [];
+        foreach ($this->recipients AS $pushHandlerHash => $recipients) {
+            foreach ($recipients AS $recipient) {
+                $output[] = $recipient;
+            }
+        }
+        return $output;
     }
 
     /**
-     * @param iterable $recipients
-     * @return PushInterface
+     * @inheritDoc
      */
-    public function setRecipients(iterable $recipients): self {
-        $this->recipients = [];
-        foreach ($recipients AS $recipient) {
-            $this->addRecipient($recipient);
+    public function getRecipientsFor(PushHandlerInterface $pushHandler): iterable {
+        $pushHandlerHash = spl_object_hash($pushHandler);
+        if (!isset($this->handlers[$pushHandlerHash])) {
+            throw new \InvalidArgumentException("This handler is not registered.");
         }
-        return $this;
+        return $this->recipients[$pushHandlerHash] ?? [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHandlers(): iterable {
+        if (empty($this->handlers)) {
+            throw new \InvalidArgumentException("No handler registered.");
+        }
+        return $this->handlers;
     }
 
     /**
@@ -74,18 +87,35 @@ class Push implements PushInterface {
      * @return bool
      */
     public function hasRecipient(RecipientInterface $recipient): bool {
-        return in_array($recipient, $this->recipients);
+        $exists = false;
+        foreach ($this->recipients AS $pushHandlerHash => $recipients) {
+            if (in_array($recipient, $this->recipients)) {
+                $exists = true;
+                break;
+            }
+        }
+        return $exists;
     }
 
     /**
      * @param RecipientInterface $recipient
-     * @return $this
+     * @param PushHandlerInterface $pushHandler
+     * @return $this|Push
      */
-    public function addRecipient(RecipientInterface $recipient): self {
+    public function addRecipient(RecipientInterface $recipient, PushHandlerInterface $pushHandler): PushInterface {
         if ($this->hasRecipient($recipient)) {
             throw new \InvalidArgumentException("This recipient is already part of that push - check with Push::hasRecipient() first");
         }
-        $this->recipients[] = $recipient;
+        $pushHandlerHash = spl_object_hash($pushHandler);
+        if (!isset($this->handlers[$pushHandlerHash])) {
+            $this->handlers[$pushHandlerHash] = $pushHandler;
+        }
+        if (!isset($this->recipients[$pushHandlerHash])) {
+            $this->recipients[$pushHandlerHash] = [$recipient];
+        }
+        else {
+            $this->recipients[$pushHandlerHash][] = $recipient;
+        }
         return $this;
     }
 
@@ -94,10 +124,31 @@ class Push implements PushInterface {
      * @return $this
      */
     public function removeRecipient(RecipientInterface $recipient): self {
-        if (false !== ($i = array_search($recipient, $this->recipients))) {
-            unset($this->recipients[$i]);
+        foreach ($this->recipients AS $pushHandlerHash => $recipients) {
+            if (false !== ($i = array_search($recipient, $recipients))) {
+                unset($this->recipients[$pushHandlerHash][$i]);
+            }
         }
+
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHandlerFor(RecipientInterface $recipient): PushHandlerInterface {
+        $handler = null;
+        foreach ($this->recipients AS $pushHandlerHash => $recipients) {
+            foreach ($recipients AS $_recipient) {
+                if ($_recipient === $recipient) {
+                    $handler = $this->handlers[$pushHandlerHash];
+                }
+            }
+        }
+        if (!$handler instanceof PushHandlerInterface) {
+            throw new \InvalidArgumentException("Unable to find handler for that recipient");
+        }
+        return $handler;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace BenTools\Pusher\Model\Push;
 
+use BenTools\Pusher\Model\Handler\PushHandlerInterface;
 use BenTools\Pusher\Model\Message\MessageInterface;
 use BenTools\Pusher\Model\Recipient\RecipientInterface;
 
@@ -9,6 +10,42 @@ interface PushInterface {
 
 	const STATUS_PENDING = 'pending';
 	const STATUS_DONE    = 'done';
+
+    /**
+     * @param RecipientInterface $recipient
+     * @param PushHandlerInterface $pushHandler
+     * @return $this|Push
+     */
+    public function addRecipient(RecipientInterface $recipient, PushHandlerInterface $pushHandler): PushInterface;
+
+    /**
+     * @param RecipientInterface $recipient
+     * @return bool
+     */
+    public function hasRecipient(RecipientInterface $recipient): bool;
+
+    /**
+     * @return iterable|RecipientInterface[]
+     */
+    public function getRecipients(): iterable;
+
+    /**
+     * @param PushHandlerInterface $pushHandler
+     * @return iterable|RecipientInterface[]
+     */
+    public function getRecipientsFor(PushHandlerInterface $pushHandler): iterable;
+
+    /**
+     * @return iterable|PushHandlerInterface[]
+     */
+    public function getHandlers(): iterable;
+
+    /**
+     * @param RecipientInterface $recipient
+     * @return PushHandlerInterface
+     * @throws \InvalidArgumentException
+     */
+    public function getHandlerFor(RecipientInterface $recipient): PushHandlerInterface;
 
 	/**
 	 * @return bool
@@ -65,11 +102,6 @@ interface PushInterface {
 	 * @return $this
 	 */
 	public function setMessage(MessageInterface $message): PushInterface;
-
-	/**
-	 * @return RecipientInterface[]
-	 */
-	public function getRecipients(): iterable;
 
 	/**
 	 * @return iterable|RecipientInterface[]

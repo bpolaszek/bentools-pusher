@@ -17,7 +17,7 @@ class Pusher {
     /**
      * @var PushHandlerInterface[]
      */
-    protected $handlers = [];
+    private $handlers = [];
 
     /**
      * @param PushInterface $push
@@ -32,9 +32,6 @@ class Pusher {
      * @return PromiseInterface
      */
     public function pushAsync(PushInterface $push): PromiseInterface {
-        if (empty($this->handlers)) {
-            throw new \InvalidArgumentException("No handler registered.");
-        }
         return all($this->getPromises($push))->then(function () use ($push) {
             $push->setStatus(PushInterface::STATUS_DONE);
         })->otherwise(function () use ($push) {
@@ -48,33 +45,9 @@ class Pusher {
      * @return \Generator
      */
     private function getPromises(PushInterface $push) {
-        foreach ($this->handlers AS $handler) {
+        foreach ($push->getHandlers() AS $handler) {
             yield $handler->getIdentifier() => $handler->getPromise($push);
         }
-    }
-
-    /**
-     * @param PushHandlerInterface $handler
-     *
-     * @return $this
-     */
-    public function registerHandler(PushHandlerInterface $handler) {
-        $this->handlers[] = $handler;
-        return $this;
-    }
-
-    /**
-     * @param PushHandlerInterface $handler
-     *
-     * @return $this
-     */
-    public function unregisterHandler(PushHandlerInterface $handler) {
-        foreach ($this->handlers AS $h => $_handler) {
-            if ($handler === $_handler) {
-                unset($this->handlers[$h]);
-            }
-        }
-        return $this;
     }
 
     /**

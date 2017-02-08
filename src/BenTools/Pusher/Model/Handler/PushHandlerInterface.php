@@ -19,10 +19,4 @@ interface PushHandlerInterface {
      */
     public function getPromise(PushInterface $push) : PromiseInterface;
 
-    /**
-     * @param RecipientInterface $recipient
-     * @return bool
-     */
-    public function supports(RecipientInterface $recipient) : bool;
-
 }

@@ -34,12 +34,6 @@ interface RecipientInterface {
     public function getAuthSecret(): ?string;
 
     /**
-     * Returns the Push handler
-     * @return PushHandlerInterface
-     */
-    public function getPushHandler(): PushHandlerInterface;
-
-    /**
      * Extra params
      * @param $key
      * @return mixed

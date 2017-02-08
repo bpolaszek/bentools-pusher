@@ -87,10 +87,8 @@ class GoogleCloudMessagingHandler implements PushHandlerInterface {
      * @return \Generator
      */
     private function getPromises(PushInterface $push) {
-        foreach ($push->getRecipients() as $recipient) {
-            if ($this->supports($recipient)) {
-                yield $recipient->getIdentifier() => $this->createPromiseForPush($push, $recipient);
-            }
+        foreach ($push->getRecipientsFor($this) as $recipient) {
+            yield $recipient->getIdentifier() => $this->createPromiseForPush($push, $recipient);
         }
     }
 
@@ -105,13 +103,6 @@ class GoogleCloudMessagingHandler implements PushHandlerInterface {
             ->otherwise(function (\Exception $exception) use ($push, $recipient) {
                 $push->setFailedFor($recipient, $exception);
             });
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function supports(RecipientInterface $recipient): bool {
-        return $recipient->getPushHandler() === $this && $recipient->getOption('googleSenderId') === $this->getSenderId();
     }
 
     /**
