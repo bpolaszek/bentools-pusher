@@ -16,7 +16,6 @@ use function GuzzleHttp\Promise\all;
 class MozillaHandler implements PushHandlerInterface {
 
     const IDENTIFIER  = 'mozilla';
-    const URL_PATTERN = 'https://updates.push.services.mozilla.com/wpush/v1/%s';
 
     /**
      * @var ClientInterface
@@ -46,7 +45,7 @@ class MozillaHandler implements PushHandlerInterface {
      * @return RequestInterface
      */
     private function prepareRequest(MessageInterface $message, RecipientInterface $recipient) {
-        $uri = new Uri($recipient->getEndpoint() ?? sprintf(static::URL_PATTERN, $recipient->getIdentifier()));
+        $uri = new Uri($recipient->getEndpoint());
         return Pusher::createStandardRequest($message, $recipient)->withUri($uri);
     }
 

@@ -12,9 +12,9 @@ interface RecipientInterface {
     /**
      * Returns the full endpoint URL,
      * i.e https://updates.push.services.mozilla.com/wpush/v1/gAAAAABYEhyddV1zx1zBpSZu8NlL2xrh78jlcAJKjYuyrStFBxqtnbu-pmlub3CieaqD_7cgSdj9ZRJWuvy3usRmcLCRcIMBZ8Bnlc1PzJ_nSOvHWU5S6oduNoRnOC_S3mpfxwmEa02O
-     * @return null|string
+     * @return string
      */
-    public function getEndpoint(): ?string;
+    public function getEndpoint(): string;
 
     /**
      * Returns the subscription identifier,

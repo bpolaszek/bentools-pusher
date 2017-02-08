@@ -16,7 +16,6 @@ use function GuzzleHttp\Promise\all;
 class GoogleCloudMessagingHandler implements PushHandlerInterface {
 
     const IDENTIFIER  = 'gcm';
-    const URL_PATTERN = 'https://android.googleapis.com/gcm/send/%s';
 
     /**
      * @var ClientInterface
@@ -31,22 +30,15 @@ class GoogleCloudMessagingHandler implements PushHandlerInterface {
     private $apiKey;
 
     /**
-     * Optionnal: Google Sender Id - useful if you have multiple sender ids
-     * @var string
-     */
-    private $senderId;
-
-    /**
      * GoogleCloudMessagingHandler constructor.
      *
      * @param ClientInterface $client
      * @param null $apiKey
      * @param null $senderId
      */
-    public function __construct(ClientInterface $client, $apiKey = null, $senderId = null) {
+    public function __construct(ClientInterface $client, $apiKey = null) {
         $this->client   = $client;
         $this->apiKey   = $apiKey;
-        $this->senderId = $senderId;
     }
 
     /**
@@ -68,7 +60,7 @@ class GoogleCloudMessagingHandler implements PushHandlerInterface {
             throw new \RuntimeException("No API Key provided.");
         }
 
-        $uri = new Uri($recipient->getEndpoint() ?? sprintf(static::URL_PATTERN, $recipient->getIdentifier()));
+        $uri = new Uri($recipient->getEndpoint());
         return Pusher::createStandardRequest($message, $recipient)
             ->withUri($uri)
             ->withHeader('Authorization', sprintf('key=%s', $this->getApiKey()));
@@ -119,22 +111,6 @@ class GoogleCloudMessagingHandler implements PushHandlerInterface {
      */
     public function setApiKey($apiKey) {
         $this->apiKey = $apiKey;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSenderId() {
-        return $this->senderId;
-    }
-
-    /**
-     * @param string|null $senderId
-     * @return $this - Provides Fluent Interface
-     */
-    public function setSenderId($senderId) {
-        $this->senderId = $senderId;
         return $this;
     }
 }

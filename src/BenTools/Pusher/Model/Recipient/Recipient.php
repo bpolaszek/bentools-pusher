@@ -31,14 +31,14 @@ class Recipient implements RecipientInterface {
     /**
      * @inheritDoc
      */
-    public function getEndpoint(): ?string {
+    public function getEndpoint(): string {
         return $this->endpoint;
     }
 
     /**
      * @inheritDoc
      */
-    public function setEndpoint(?string $endpoint): RecipientInterface {
+    public function setEndpoint(string $endpoint): RecipientInterface {
         $this->endpoint = $endpoint;
         return $this;
     }
