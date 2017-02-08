@@ -4,7 +4,6 @@ namespace BenTools\Pusher;
 
 use BenTools\Pusher\Model\Message\MessageInterface;
 use BenTools\Pusher\Model\Push\PushInterface;
-use BenTools\Pusher\Model\Handler\PushHandlerInterface;
 use BenTools\Pusher\Model\Recipient\RecipientInterface;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
@@ -13,11 +12,6 @@ use Psr\Http\Message\RequestInterface;
 use function GuzzleHttp\Promise\all;
 
 class Pusher {
-
-    /**
-     * @var PushHandlerInterface[]
-     */
-    private $handlers = [];
 
     /**
      * @param PushInterface $push
