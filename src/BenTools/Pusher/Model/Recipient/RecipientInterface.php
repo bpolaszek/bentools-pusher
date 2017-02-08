@@ -2,8 +2,6 @@
 
 namespace BenTools\Pusher\Model\Recipient;
 
-use BenTools\Pusher\Model\Handler\PushHandlerInterface;
-
 interface RecipientInterface {
 
     const AUTH_KEY    = 'p256dh';

@@ -15,8 +15,6 @@ use function GuzzleHttp\Promise\all;
 
 class MozillaHandler implements PushHandlerInterface {
 
-    const IDENTIFIER  = 'mozilla';
-
     /**
      * @var ClientInterface
      */
@@ -29,13 +27,6 @@ class MozillaHandler implements PushHandlerInterface {
      */
     public function __construct(ClientInterface $client) {
         $this->client = $client;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIdentifier(): string {
-        return self::IDENTIFIER;
     }
 
     /**

@@ -33,7 +33,7 @@ class ServerMessage extends AbstractMessage implements MessageInterface, \JsonSe
     /**
      * @inheritDoc
      */
-    public function getText() : string {
+    public function getText(): string {
         return json_encode($this);
     }
 

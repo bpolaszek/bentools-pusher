@@ -15,8 +15,6 @@ use function GuzzleHttp\Promise\all;
 
 class GoogleCloudMessagingHandler implements PushHandlerInterface {
 
-    const IDENTIFIER  = 'gcm';
-
     /**
      * @var ClientInterface
      */
@@ -39,13 +37,6 @@ class GoogleCloudMessagingHandler implements PushHandlerInterface {
     public function __construct(ClientInterface $client, $apiKey = null) {
         $this->client   = $client;
         $this->apiKey   = $apiKey;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIdentifier(): string {
-        return self::IDENTIFIER;
     }
 
     /**

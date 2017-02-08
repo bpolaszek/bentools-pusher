@@ -2,7 +2,7 @@
 
 namespace BenTools\Pusher\Model\Message;
 
-class JsonMessage extends AbstractMessage implements MessageInterface, \JsonSerializable  {
+class JsonMessage extends AbstractMessage implements MessageInterface, \JsonSerializable {
 
     /**
      * @var
@@ -34,7 +34,7 @@ class JsonMessage extends AbstractMessage implements MessageInterface, \JsonSeri
     /**
      * @inheritDoc
      */
-    public function getText() : string {
+    public function getText(): string {
         return json_encode($this);
     }
 

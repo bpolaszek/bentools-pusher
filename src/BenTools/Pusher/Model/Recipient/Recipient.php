@@ -2,7 +2,6 @@
 
 namespace BenTools\Pusher\Model\Recipient;
 
-use BenTools\Pusher\Model\Handler\PushHandlerInterface;
 use function GuzzleHttp\json_decode;
 
 class Recipient implements RecipientInterface {

@@ -4,7 +4,7 @@ namespace BenTools\Pusher\Model\Message;
 
 class Message extends AbstractMessage implements MessageInterface {
 
-    protected $text   = '';
+    protected $text = '';
 
     /**
      * Message constructor.
@@ -17,14 +17,14 @@ class Message extends AbstractMessage implements MessageInterface {
     /**
      * @inheritDoc
      */
-    public function getText() : string {
+    public function getText(): string {
         return $this->text;
     }
 
     /**
      * @inheritDoc
      */
-    public function setText(string $text) : MessageInterface {
+    public function setText(string $text): MessageInterface {
         $this->text = $text;
         return $this;
     }

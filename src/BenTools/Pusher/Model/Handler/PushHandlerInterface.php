@@ -9,11 +9,6 @@ use GuzzleHttp\Promise\PromiseInterface;
 interface PushHandlerInterface {
 
     /**
-     * @return string
-     */
-    public function getIdentifier() : string;
-
-    /**
      * @param PushInterface $push
      * @return PromiseInterface
      */

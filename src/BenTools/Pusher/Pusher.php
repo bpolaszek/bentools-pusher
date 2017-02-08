@@ -39,12 +39,13 @@ class Pusher {
      * @return \Generator
      */
     private function getPromises(PushInterface $push) {
-        foreach ($push->getHandlers() AS $handler) {
-            yield $handler->getIdentifier() => $handler->getPromise($push);
+        foreach ($push->getHandlers() AS $key => $handler) {
+            yield $key => $handler->getPromise($push);
         }
     }
 
     /**
+     * Create a basic PSR-7 request that can be used by GCM and Mozilla.
      * @param MessageInterface   $message
      * @param RecipientInterface $recipient
      *

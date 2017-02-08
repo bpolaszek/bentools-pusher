@@ -23,7 +23,7 @@ class Action implements \JsonSerializable {
     /**
      * @return string
      */
-    public function getIdentifier() : string {
+    public function getIdentifier(): string {
         return $this->identifier;
     }
 
@@ -39,7 +39,7 @@ class Action implements \JsonSerializable {
     /**
      * @return string
      */
-    public function getTitle() : string {
+    public function getTitle(): string {
         return $this->title;
     }
 
