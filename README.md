@@ -2,6 +2,9 @@ PHP Webpush API implementation
 =========
 
 Allows to send messages via WebPushAPI, on different providers (Google Chrome, Mozilla), asynchronously, on multiple recipients, using multiple API keys.
+
+> [!IMPORTANT]  
+> This repository is no longer maintained and may be removed in a near future. You may consider creating a fork if you still require it.
   
 Looks stable, but still experimental.
 
